@@ -9,14 +9,12 @@ function listAvailablePorts(board = undefined, vendor = undefined) {
 
     // Get all the ports
     SerialPort.list().then((ports) => {
-      // filter by vendor
+      // Filter the ports
       let filteredPorts = ports.filter(({ vendorId: vid }) => {
-        if (vendor) return vendor == parseInt(vid, 16);
+        if (vendor) return vendor == parseInt(vid, 16); // hex
         return true;
-      });
-      // filter by board
-      filteredPorts = filteredPorts.filter(({ productId: pid }) => {
-        if (board) return board == parseInt(pid, 16);
+      }).filter(({ productId: pid }) => {
+        if (board) return board == parseInt(pid, 16); // hex
         return true;
       });
       // Extract the port names
@@ -38,12 +36,12 @@ function disconnect() {
   serialPort.close();
 }
 
-function connect(portName, baud = 115200) {
+function connect(portName, baud = 115200, delayAtStart = 100) {
   return new Promise((resolve, reject) => {
 
     // Already connected?
     if (isConnected()) {
-      reject("Serial port already open")
+      reject("Serial port already open");
     }
 
     serialPort = new SerialPort(portName, {
@@ -53,7 +51,7 @@ function connect(portName, baud = 115200) {
     serialPort.on('open', () => {
       setTimeout(() => {
         resolve();
-      }, 500);
+      }, delayAtStart); // let's give it some time to wake up
     });
   });
 }
@@ -62,7 +60,7 @@ function send(commandString) {
   serialPort?.write(`${commandString}\n\r`);
 }
 
-function sendAndReceive(command, timeout = 1000) {
+function sendAndReceive(commandString, timeout = 1000) {
   return new Promise((resolve, reject) => {
 
     // Parse the incoming data as text
@@ -82,15 +80,9 @@ function sendAndReceive(command, timeout = 1000) {
     }, timeout);
 
     // And finally send the data
-    send(command);
+    send(commandString);
   });
 }
-
-
-
-
-
-
 
 
 module.exports = {
