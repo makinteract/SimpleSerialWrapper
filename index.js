@@ -3,34 +3,6 @@ const Readline = require('@serialport/parser-readline')
 
 let serialPort;
 
-function send(commandString) {
-  serialPort?.write(`${commandString}\n\r`);
-}
-
-function sendAndReceive(command, timeout = 1000) {
-  return new Promise((resolve, reject) => {
-
-    // Parse the incoming data as text
-    const parser = serialPort.pipe(new Readline());
-
-    // Set listener
-    const handleData = (data) => {
-      resolve(data);
-    };
-
-    parser.on('data', handleData);
-
-    // Timeout
-    setTimeout(() => {
-      parser.removeListener('data', handleData);
-      reject('Timeout');
-    }, timeout);
-
-    // And finally send the data
-    sendString(command);
-  });
-}
-
 
 function listAvailablePorts(board = undefined, vendor = undefined) {
   return new Promise((resolve, reject) => {
@@ -55,17 +27,15 @@ function listAvailablePorts(board = undefined, vendor = undefined) {
   });
 }
 
+function isConnected() {
+  return serialPort?.isOpen || false;
+}
 
 function disconnect() {
   if (!isConnected()) {
     throw new Error("Serial port not connected");
   }
   serialPort.close();
-}
-
-
-function isConnected() {
-  return serialPort?.isOpen || false;
 }
 
 function connect(portName, baud = 115200) {
@@ -86,4 +56,48 @@ function connect(portName, baud = 115200) {
       }, 500);
     });
   });
+}
+
+function send(commandString) {
+  serialPort?.write(`${commandString}\n\r`);
+}
+
+function sendAndReceive(command, timeout = 1000) {
+  return new Promise((resolve, reject) => {
+
+    // Parse the incoming data as text
+    const parser = serialPort.pipe(new Readline());
+
+    // Set listener
+    const handleData = (data) => {
+      resolve(data);
+    };
+
+    parser.on('data', handleData);
+
+    // Timeout
+    setTimeout(() => {
+      parser.removeListener('data', handleData);
+      reject('Timeout');
+    }, timeout);
+
+    // And finally send the data
+    send(command);
+  });
+}
+
+
+
+
+
+
+
+
+module.exports = {
+  connect,
+  disconnect,
+  send,
+  sendAndReceive,
+  listAvailablePorts,
+  isConnected
 }
