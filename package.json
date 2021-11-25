@@ -1,0 +1,22 @@
+{
+  "name": "simple-serial-wrapper",
+  "version": "0.1.0",
+  "description": "Simple Serial Wrapper",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:makinteract/SimpleSerialWrapper.git"
+  },
+  "keywords": [
+    "serial"
+  ],
+  "author": "Andrea Bianchi <andrea@kaist.ac.kr> (http://makinteract.kaist.ac.kr)",
+  "license": "MIT",
+  "homepage": "https://github.com/makinteract/SimpleSerialWrapper",
+  "engines": {
+    "node": ">= 9.0.0"
+  },
+  "dependencies": {
+    "serialport": "^9.2.1"
+  }
+}
